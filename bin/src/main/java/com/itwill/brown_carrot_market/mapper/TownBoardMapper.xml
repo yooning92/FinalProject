@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.TownBoardMapper"> 
+	<resultMap id="townBoradResultMap" type="com.itwill.brown_carrot_market.dto.TownBoard" >
+		<result column="T_NO" property="t_no"/>
+		<result column="T_TITLE" property="t_title"/>
+		<result column="T_CONTENT" property="t_content"/>
+		<result column="T_DATE" property="t_date"/>
+		<result column="T_COUNT" property="t_count"/>
+		<result column="T_ADDRESS_NAME" property="t_address_name"/>
+		<result column="T_ADDRESS_LAT" property="t_address_lat"/>
+		<result column="T_ADDRESS_LNG" property="t_address_lng"/>
+		<association property="townCategory" javaType="com.itwill.brown_carrot_market.dto.TownCategory">
+			<result column="T_CTGR_NO" property="t_ctgr_no"/>
+			<result column="T_CTGR_NAME" property="t_ctgr_name"/>
+		</association>
+		<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+			<result column="USER_ID" property="user_id"/>
+			<result column="USER_PW" property="user_pw"/>
+			<result column="USER_NAME" property="user_name"/>
+			<result column="USER_EMAIL" property="user_email"/>
+			<result column="USER_PHONE" property="user_phone"/>
+			<result column="USER_FRESHNESS" property="user_freshness"/>
+			<result column="USER_POINT" property="user_point"/>
+			<result column="USER_PROFILE" property="user_profile"/>
+		</association>
+		<collection property="townImageList" javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.TownImage" >
+			<result column="T_IMG_NO" property="t_img_no"/>
+			<result column="T_IMG_NAME" property="t_img_name"/>
+		</collection>
+		<collection property="addressesList" javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.Address">
+			<result column="address_no" property="address_no" />
+			<result column="address_name" property="address_name" />
+			<result column="address_lat" property="address_lat" />
+			<result column="address_lng" property="address_lng" />
+			<result column="address_range" property="address_range" />
+		</collection>
+		
+	</resultMap>
+	
+	<!-- 동네게시판 글 등록 -->
+	
+	<select id="selectTownBoardAddress" parameterType="map" resultType="map">
+		select a.ADDRESS_NAME,a.ADDRESS_LAT,a.ADDRESS_LNG from ADDRESS a where a.user_id=#{user_id} and a.address_no=#{address_no}
+	</select>
+	
+	<select id="selectTownBoardPK" resultType="int">
+		select TOWN_BOARD_T_NO_SEQ.currval from dual
+	</select>
+	
+	<insert id="insertTownBoard" parameterType="map" useGeneratedKeys="true">
+		insert into town_board values(TOWN_BOARD_T_NO_SEQ.nextval, #{t_title},#{t_content},sysdate,0,#{townCategory.t_ctgr_no},#{address.address_name},#{address.address_lat}, #{address.address_lng},#{userInfo.user_id})
+		<selectKey keyProperty="t_no" order="AFTER" resultType="int">
+			select TOWN_BOARD_T_NO_SEQ.currval from dual
+		</selectKey>
+	</insert>
+	
+<!-- 
+	<insert id="insertTownBoard" parameterType="map" useGeneratedKeys="true">
+		<selectKey keyProperty="t_no" order="BEFORE" resultType="int">
+			select TOWN_BOARD_T_NO_SEQ.nextval from dual
+		</selectKey>
+		insert into town_board values(#{t_no}, #{t_title},#{t_content},sysdate,0,#{townCategory.t_ctgr_no},#{address.address_name},#{address.address_lat}, #{address.address_lng},#{userInfo.user_id})
+	</insert>
+	
+	<insert id="insertTownBoard" parameterType="map">
+		insert into town_board(t_no, t_title, t_content, t_date, t_count, t_ctgr_no,t_address_name, t_address_lat,t_address_lng,user_id)
+		values(TOWN_BOARD_T_NO_SEQ.nextval, #{t_title},#{t_content},sysdate,#{t_count},#{townBoard.townCategory.t_ctgr_no},#{address.ADDRESS_NAME},#{address.ADDRESS_LAT}, #{address.ADDRESS_LNG},#{townBoard.userInfo.user_id})
+	</insert>
+	
+	<insert id="insertProduct" parameterType="map" useGeneratedKeys="true">
+		<selectKey keyProperty="p_no" order="BEFORE" resultType="int">
+			select PRODUCT_P_NO_SEQ.nextval from dual
+		</selectKey>
+		insert into product p values(#{p_no}, 
+                           #{p_title},
+                		   #{p_desc},
+               			   #{p_price},
+               			   sysdate,
+               			   1,
+               			   0,
+               			   0,				
+                           #{address.address_name},
+                           #{address.address_lat},
+                           #{address.address_lng},
+                           #{productCategory.p_ctgr_no},
+                           #{userInfo.user_id})
+	</insert>
+	  -->	
+	
+	
+	<!-- 비회원이 동네게시판 글 전체 조회.. -->
+	<!-- 
+	<select id="selectNonMemberTownBoardList" resultMap="townBoradResultMap">
+		select * from town_board tb 
+		left outer join town_img ti 
+		on tb.t_no = ti.t_no
+		join town_category tc
+		on tc.t_ctgr_no = tb.t_ctgr_no
+		order by tb.t_date desc
+	</select>
+	 -->
+	<!-- 비회원이 동네게시판 글 전체 조회.. 페이징 처리
+	<select id="selectNonMemberTownBoardList" resultMap="townBoradResultMap">
+		select ss.* from 
+		(select rownum idx, s.* from
+		(select * from town_board tb 
+		left outer join town_img ti 
+		on tb.t_no = ti.t_no
+		join town_category tc
+		on tc.t_ctgr_no = tb.t_ctgr_no
+		order by tb.t_date desc)s
+		)ss
+		where ss.idx <![CDATA[ >= ]]> #{pageStart} and ss.idx <![CDATA[ <= ]]> #{pageEnd}
+	</select>
+	-->
+	<!-- 비회원이 동네게시판 글 전체 조회.. 페이징 처리 - 사진 한장만 나오게-->
+	<select id="selectNonMemberTownBoardList" resultMap="townBoradResultMap">
+		 select fffa.* from(
+ select rownum idx1, f.* from(select ss.* from 
+		(select rownum idx, s.* from
+		(select ctlist.* from (select plist.*,pmg.t_img_name from town_img pmg 
+right outer join (select tb.*,imgno from 
+                    (select min(i.t_img_no)imgno,t_no from town_img i group by i.t_no)img 
+right outer join (select *
+from (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no) p )tb
+on img.t_no=tb.t_no)plist
+on pmg.t_img_no=plist.imgno) ctlist
+join town_category tc
+on ctlist.t_ctgr_no = tc.t_ctgr_no)s
+		)ss order by t_date desc) f )fffa
+ where fffa.idx1 <![CDATA[ >= ]]> #{pageStart} and fffa.idx1 <![CDATA[ <= ]]> #{pageEnd}
+	</select>
+	
+	<!-- 비회원의 동네게시판  전체 게시물 수  계산-->
+	<select id="selectNonMemberCountTownBoard" resultType="int">
+		select count(*) from (select ctlist.* from (select plist.*,pmg.t_img_name from town_img pmg 
+right outer join (select tb.*,imgno from 
+                    (select min(i.t_img_no)imgno,t_no from town_img i group by i.t_no)img 
+right outer join (select *
+from (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no) p )tb
+on img.t_no=tb.t_no)plist
+on pmg.t_img_no=plist.imgno) ctlist
+join town_category tc
+on ctlist.t_ctgr_no = tc.t_ctgr_no)
+	</select>
+	
+	
+	
+	<!-- 비회원이 카테고리로 조건 검색(동네게시판 글 전체 조회) -->
+	<!-- 
+	<select id="selectNonMemberCtgrTownBoardList" parameterType="int" resultMap="townBoradResultMap">
+	select * from town_board tb 
+	left outer join town_img ti 
+	on tb.t_no = ti.t_no
+	join town_category tc
+	on tc.t_ctgr_no = tb.t_ctgr_no
+	where tc.t_ctgr_no=#{t_ctgr_no}
+	order by tb.t_date desc
+	</select>
+	 -->
+	<!-- 비회원이 카테고리로 조건 검색(동네게시판 글 전체 조회) 페이징 처리-->
+	<select id="selectNonMemberCtgrTownBoardList" parameterType="int" resultMap="townBoradResultMap">
+ select fffa.* from(
+ select rownum idx1, f.* from(select ss.* from 
+		(select rownum idx, s.* from
+		(select ctlist.* from (select plist.*,pmg.t_img_name from town_img pmg 
+right outer join (select tb.*,imgno from 
+                    (select min(i.t_img_no)imgno,t_no from town_img i group by i.t_no)img 
+right outer join (select *
+from (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no) p )tb
+on img.t_no=tb.t_no)plist
+on pmg.t_img_no=plist.imgno) ctlist
+join town_category tc
+on ctlist.t_ctgr_no = tc.t_ctgr_no where tc.t_ctgr_no=#{t_ctgr_no})s
+		)ss order by t_date desc) f )fffa
+ where fffa.idx1 <![CDATA[ >= ]]> #{pageStart} and fffa.idx1 <![CDATA[ <= ]]> #{pageEnd}
+		
+
+		
+	</select>
+	<!-- 비회원의 동네게시판 카테고리 조건검색 전체 게시물 수  계산-->
+	<select id="selectNonMemberCountCtgrTownBoard" parameterType="int" resultType="int">
+		select count(*) from (select ctlist.* from (select plist.*,pmg.t_img_name from town_img pmg 
+right outer join (select tb.*,imgno from 
+                    (select min(i.t_img_no)imgno,t_no from town_img i group by i.t_no)img 
+right outer join (select *
+from (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no) p )tb
+on img.t_no=tb.t_no)plist
+on pmg.t_img_no=plist.imgno) ctlist
+join town_category tc
+on ctlist.t_ctgr_no = tc.t_ctgr_no where tc.t_ctgr_no=#{t_ctgr_no})
+	</select>
+	
+	
+	
+	
+	<!-- 동네 게시판 글 전체 조회 (좌표 값에 따라 검색하기) -->
+	<!-- 
+	<select id="selectTownBoardListCoordinate" parameterType="com.itwill.brown_carrot_market.dto.Address" resultMap="townBoradResultMap" >
+		select * from (select * from town_board tb 
+left outer join town_img ti 
+on tb.t_no = ti.t_no
+join town_category tc
+on tc.t_ctgr_no = tb.t_ctgr_no
+where tb.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) tblist
+        where tblist.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+            AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+		
+	</select> 
+	 -->
+	<!-- 동네 게시판 글 전체 조회 (좌표 값에 따라 검색하기)회원 페이징 처리-->
+	<select id="selectTownBoardListCoordinate" parameterType="com.itwill.brown_carrot_market.dto.Address" resultMap="townBoradResultMap" >
+		 select fffa.* from(
+select rownum idx1, f.* from (select sss.* from(select rownum idx ,plist.*,pmg.t_img_name from town_img pmg
+                    right outer join (select p.*,imgno from (select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img 
+                    right outer join (select * from  (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no 
+                    where p.t_address_lat 
+                    between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                    AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})) pp
+                    where pp.t_address_lng
+                    between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                        AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                    )p 
+                    on img.t_no=p.t_no)plist
+                    on pmg.t_img_no=plist.imgno)sss
+                    order by t_date desc) f) fffa
+ where fffa.idx1 <![CDATA[ >= ]]> #{pageStart} and fffa.idx1 <![CDATA[ <= ]]> #{pageEnd}
+	</select>
+	
+	<!-- 회원의 동네 게시판 글 전체 게시물 수 계산 -->
+	<!--
+	<select id="selectMemberCountTownBoard" parameterType="com.itwill.brown_carrot_market.dto.Address" resultType="int">
+		select count(*) from (select * from (select * from town_board tb 
+left outer join town_img ti 
+on tb.t_no = ti.t_no
+join town_category tc
+on tc.t_ctgr_no = tb.t_ctgr_no
+where tb.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})) tblist
+        where tblist.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+		)
+	</select>
+	-->
+	<!--  select count(*) from (select sss.* from(select rownum idx,plist.*,pmg.t_img_name from town_img pmg
+                    right outer join (select p.*,imgno from (select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img 
+                    right outer join (select * from  (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no 
+                    where p.t_address_lat 
+                    between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                    AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) pp
+                    where pp.t_address_lng
+                    between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                        AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                    )p 
+                    on img.t_no=p.t_no)plist
+                    on pmg.t_img_no=plist.imgno)sss
+                    order by t_date desc) -->
+	<!-- 회원의 동네 게시판 글 전체 게시물 수 계산 -->
+	<select id="selectMemberCountTownBoard" parameterType="com.itwill.brown_carrot_market.dto.Address" resultType="int">
+		select count(*) from town_img pmg
+          right outer join (select * from (select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img 
+              right outer join (select * from  (select * from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no
+             where p.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) pp
+		        where pp.t_address_lng
+		        between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+		            AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+				)p 
+            on img.t_no=p.t_no)plist
+            on pmg.t_img_no=plist.imgno
+	</select>
+	
+	
+	<!-- 동네 게시판 글 전체 조회(좌표값에 따라 검색 + 카테고리로 검색) -->
+	<!-- 
+	<select id="selectTownBoardCtgrListCoordinate" parameterType="map" resultMap="townBoradResultMap" >
+		select * from (select * from(select * from town_board tb left outer join town_img ti on tb.t_no = ti.t_no
+                            join town_category tc on tc.t_ctgr_no = tb.t_ctgr_no where tc.t_ctgr_no=#{t_ctgr_no}) aa
+		where aa.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})) tblist
+        where tblist.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+		
+	</select>
+	 -->
+	 
+	 <!-- 
+		select ss.* from 
+		(select rownum idx, s.* from
+		(select * from (select * from(select * from town_board tb left outer join town_img ti on tb.t_no = ti.t_no
+                            join town_category tc on tc.t_ctgr_no = tb.t_ctgr_no where tc.t_ctgr_no=#{t_ctgr_no}) aa
+		where aa.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) tblist
+        where tblist.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+            AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+		)s
+		)ss
+		where ss.idx <![CDATA[ >= ]]> #{pageStart} and ss.idx <![CDATA[ <= ]]> #{pageEnd}
+		 -->
+	<!-- 동네 게시판 글 전체 조회(좌표값에 따라 검색 + 카테고리로 검색) 페이징 처리-->
+	<select id="selectTownBoardCtgrListCoordinate" parameterType="map" resultMap="townBoradResultMap" >
+		select fffa.* from(
+select rownum idx1, f.* from (select sss.* from(select rownum idx ,plist.*,pmg.t_img_name from town_img pmg
+                    right outer join (select p.*,imgno from (select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img 
+                    right outer join (select * from  (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no where pc.t_ctgr_no=#{t_ctgr_no} 
+                    and p.t_address_lat 
+                    between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                    AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) pp
+                    where pp.t_address_lng
+                    between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                        AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                    )p 
+                    on img.t_no=p.t_no)plist
+                    on pmg.t_img_no=plist.imgno)sss
+                    order by t_date desc) f) fffa
+ where fffa.idx1 <![CDATA[ >= ]]> #{pageStart} and fffa.idx1 <![CDATA[ <= ]]> #{pageEnd}
+		
+		
+		
+	</select>
+	<!-- 회원의 동네 게시판 카테고리 조건 글 전체 게시물 수 계산 -->
+	<select id="selectMemberCtgrCountTownBoard" parameterType="map" resultType="int">
+		<!-- 
+		select count(*) from (select * from (select * from(select * from town_board tb left outer join town_img ti on tb.t_no = ti.t_no
+                            join town_category tc on tc.t_ctgr_no = tb.t_ctgr_no where tc.t_ctgr_no=#{t_ctgr_no}) aa
+		where aa.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})) tblist
+        where tblist.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+		)
+		 -->
+select count(*) from (select sss.* from(select rownum
+							idx,plist.*,pmg.t_img_name from town_img pmg
+							right outer join (select * from 
+												(select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img
+							right outer join (select * from 
+												(select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no where pc.t_ctgr_no=#{t_ctgr_no} 
+													and p.t_address_lat
+														between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+														AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) pp
+													where pp.t_address_lng
+														between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+														AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) p
+							on img.t_no=p.t_no)plist
+							on pmg.t_img_no=plist.imgno)sss
+							where 1=1
+							order by sss.t_date desc )
+	</select>
+	<!-- 회원의 카테고리 총 계산을 위한 파라메타 맵 만들기.. -->
+	<select id="selectMemberCtgrTownBoardAddress" parameterType="map" resultType="map">
+		select a.ADDRESS_LAT,a.ADDRESS_LNG from ADDRESS a where a.user_id=#{user_id} and a.address_no=#{address_no}
+	</select>
+	
+	
+	
+	
+	<!-- 게시글 한개 찾기(글 번호로) -->
+	<select id="selectTownBoardOne" parameterType="java.lang.Integer" resultMap="townBoradResultMap">
+		select * from town_board tb 
+		left outer join town_img ti 
+		on tb.t_no = ti.t_no
+		join town_category tc
+		on tc.t_ctgr_no = tb.t_ctgr_no
+		where tb.t_no=#{t_no}
+	</select>
+	
+	<!-- 게시글 아이디로 찾기(내가 쓴 게시물리스트 찾기) -->
+	<select id="selectTownBoardIdList" parameterType="java.lang.String" resultMap="townBoradResultMap">
+		select * from town_board tb 
+		left outer join town_img ti 
+		on tb.t_no = ti.t_no
+		join town_category tc
+		on tc.t_ctgr_no = tb.t_ctgr_no
+		where user_id=#{user_id}
+		order by tb.t_date desc
+	</select>
+	
+	<!-- 게시글 한개 삭제 -->
+	<delete id="deleteTownBoardOne" parameterType="java.lang.Integer">
+		delete town_board where t_no=#{t_no}
+	</delete>
+	
+	<!-- 게시글 한개 수정 -->
+	<update id="updateTownBoardOne" parameterType="map">
+		update town_board set t_title=#{t_title},t_content=#{t_content}, t_ctgr_no=#{townCategory.t_ctgr_no} where t_no=#{t_no}
+	</update>
+	
+	<!-- 게시물 조회수 증가 -->
+	<update id="updateTownBoardCount" parameterType="int">
+		update town_board set t_count=t_count+1 where t_no=#{t_no}
+	</update>
+	
+	<!-- 비회원 인기글 조회 -->
+	<select id="selectNonMemberTownBoardListTop3" resultMap="townBoradResultMap">
+		select * from town_board tb 
+		left outer join town_img ti 
+		on tb.t_no = ti.t_no
+		join town_category tc
+		on tc.t_ctgr_no = tb.t_ctgr_no
+		order by tb.t_count desc
+	</select>
+	
+	<!-- 회원 인기글 조회 -->
+	<select id="selectMemberTownBoardListTop3" resultMap="townBoradResultMap">
+		select * from
+		(select * from (select * from town_board tb 
+left outer join town_img ti 
+on tb.t_no = ti.t_no
+join town_category tc
+on tc.t_ctgr_no = tb.t_ctgr_no
+where tb.t_address_lat 
+           between (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+                AND (select a.address_lat from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})) tblist
+        where tblist.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+            AND (select a.address_lng from address a where a.user_id=#{user_id} and a.address_no=#{address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{user_id} and a.address_no=#{address_no})
+		)s
+		order by s.t_count desc
+	</select>
+
+	
+	
+</mapper>

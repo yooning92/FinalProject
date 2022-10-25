@@ -1,0 +1,119 @@
+@charset "UTF-8";
+li{
+	margin-left: 10px;
+}
+
+.imgspan::after{
+	width:30px;
+	height:30px;
+	background-color: #eee;
+	border-radius: 50%;
+	top: 50%;
+	left:50%;
+	transform: translate(-50%,-50%);
+	background-position: center;
+	background-size: contain;
+	background-image: url("p-img/plus.png");
+	content: '';
+	display: block;
+	position: absolute;
+	
+}
+
+.shop_pagination_area .page-item.active .page-link { /* 페이징 버튼 색 변경 */
+    background-color: orange;
+    color: #ffffff;
+}
+
+.product_badge1 {
+  left: 0;
+  position: absolute;
+  top: 15px;
+  z-index: 40; }
+	.product_badge1 span {
+    background: #747474;
+    clear: both;
+    color: #ffffff;
+    display: block;
+    font-size: 10px;
+    height: 22px;
+    line-height: 23.5px;
+    position: relative;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 2;
+    padding-left: 7px; }
+	.product_badge1 span::before {
+      border-color: #747474 transparent #747474 #747474;
+      border-style: solid;
+      border-width: 11px 6px;
+      color: orange;
+      content: "";
+      height: 100%;
+      position: absolute;
+      right: -15px;
+      top: 0;
+      width: 15px;
+      z-index: 1; }
+
+ 
+.product_badge2 {
+  left: 0;
+  position: absolute;
+  top: 15px;
+  z-index: 40; }  
+	.product_badge2 span {
+    background: #000000;
+    clear: both;
+    color: #ffffff;
+    display: block;
+    font-size: 10px;
+    height: 22px;
+    line-height: 23.5px;
+    position: relative;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 2;
+    padding-left: 7px; }
+	.product_badge2 span::before {
+      border-color: #000000 transparent #000000 #000000;
+      border-style: solid;
+      border-width: 11px 6px;
+      color: #000000;
+      content: "";
+      height: 100%;
+      position: absolute;
+      right: -15px;
+      top: 0;
+      width: 15px;
+      z-index: 1; }
+
+/*************쓰기폼***************/ 
+.contact_from mb-50{
+	width: 500px;
+	margin-bottom: 50px;
+}
+
+
+#t_content{
+	margin-top: 10px;
+	margin-bottom:30px;
+	height: 300px;
+	resize: none;
+}
+
+#btn_townBoard_write_action, .townBoard_btn.list{
+	margin-bottom: 30px;
+}
+
+
+
+
+#category_list ul{
+	width: 100px;
+}
+/*************쓰기폼끝**************/
+
+

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.TownReactionMapper">
+	
+	<!-- 공감하기 등록 -->
+	<insert id="insertTownBoardReac" parameterType="com.itwill.brown_carrot_market.dto.TownReaction">
+		insert into town_reaction(t_reac_no,t_reac_type,t_no,user_id) 
+		values(TOWN_REACTION_T_REAC_NO_SEQ.nextval,#{t_reac_type},#{townBoard.t_no},#{userInfo.user_id})
+	</insert>
+	
+	<!-- 공감하기 한개 삭제 -->
+	<delete id="deleteTownBoardReac" parameterType="int">
+		delete town_reaction where t_reac_no=#{t_reac_no}
+	</delete>
+	
+	<!-- 게시물의 공감수 구하기 -->
+	<select id="selectTownBoardReacCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) from town_reaction where t_no=#{t_no}
+	</select>
+	<!-- 게시물의 공감 타입별 공감수 구하기 -->
+	<select id="selectTownBoardReacTypeCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) from town_reaction where t_no=#{t_no} and t_reac_type=#{t_reac_type}
+	</select>
+	
+
+</mapper>

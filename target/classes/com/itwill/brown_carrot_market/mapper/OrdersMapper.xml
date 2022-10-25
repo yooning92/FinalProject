@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.OrdersMapper">
+	<resultMap id="ordersResultMap" type="com.itwill.brown_carrot_market.dto.Orders">
+		<result column="orders_no" property="orders_no" />
+		<result column="orders_date" property="orders_date" />
+		<result column="user_id" property="userinfo.user_id" />
+			<association property="transfer" javaType="com.itwill.brown_carrot_market.dto.Transfer">
+				<result column="transfer_no" property="transfer_no" />
+				<result column="transfer_deposit" property="transfer_deposit" />
+				<result column="transfer_withdraw" property="transfer_withdraw" />
+				<result column="transfer_date" property="transfer_date"/>
+				<result column="user_id" property="user_id"/>
+			<association property="orders" javaType="com.itwill.brown_carrot_market.dto.Orders">
+				<result column="orders_no" property="orders_no"/>
+				<result column="orders_date" property="orders_date" />
+				<result column="user_id" property="userinfo.user_id"/>
+					<association property="product" javaType="com.itwill.brown_carrot_market.dto.Product">
+						<result property="p_no" column="p_no" />
+					    <result property="p_title" column="p_title" />
+					    <result property="p_desc" column="p_desc" />
+					    <result property="p_price" column="p_price" />
+					    <result property="p_date" column="p_date" />
+					    <result property="p_sell" column="p_sell" />
+					<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+							<result column="USER_ID" property="user_id"/>
+							<result column="USER_NAME" property="user_name"/>
+							<result column="USER_POINT" property="user_point"/>
+						</association>
+					</association>
+			</association>
+			<association property="product" javaType="com.itwill.brown_carrot_market.dto.Product">
+				<result property="p_no" column="p_no" />
+			    <result property="p_title" column="p_title" />
+			    <result property="p_desc" column="p_desc" />
+			    <result property="p_price" column="p_price" />
+			    <result property="p_date" column="p_date" />
+			    <result property="p_sell" column="p_sell" />
+				<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+					<result column="USER_ID" property="user_id"/>
+					<result column="USER_NAME" property="user_name"/>
+					<result column="USER_POINT" property="user_point"/>
+				</association>
+			</association>
+			</association>
+		<association property="product" javaType="com.itwill.brown_carrot_market.dto.Product">
+			<result column="P_NO" property="p_no" />
+			<result column="P_TITLE" property="p_title" />
+			<result column="P_PRICE" property="p_price" />
+			<result column="P_DATE" property="p_date" />
+			<result column="P_SELL" property="p_sell" />
+			<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+				<result column="seller_id" property="user_id"/>
+			</association>
+		</association>
+		<association property="productImage" javaType="com.itwill.brown_carrot_market.dto.ProductImage">
+				<result column="pi_no" property="pi_no"/>
+				<result column="pi_name" property="pi_name"/>
+				<result column="p_no" property="p_no"/>
+		</association>
+	</resultMap>
+	
+	<select id="selectAllById" resultMap="ordersResultMap">
+		select o.*,s.*, o.orders_date, s.user_id seller_id, o.orders_date from orders o
+			join (select pi.pi_no, pi.pi_name, p.p_no, p.p_title, p.p_date, p.p_price, p.p_sell,p.user_id from product p left outer join product_img pi on p.p_no=pi.p_no)s on o.p_no = s.p_no where o.user_id=#{user_id} order by s.pi_no desc
+		<!-- select * from (select * from orders o join (select pi.pi_no, pi.pi_name, p.p_no, p.p_title, p.p_date, p.p_price, p.p_sell from product p join product_img pi on p.p_no=pi.p_no)s on o.p_no = s.p_no where user_id='carrot8' order by s.pi_no desc) where rownum=1 -->	
+	</select>
+	<select id="selectByNo" resultMap="ordersResultMap">
+		select * from orders where orders_no=#{orders_no}
+	</select>
+	<select id="selectByOrdersCount" parameterType="int" resultType="int">
+		select count(*) from orders where p_no=#{p_no}
+	</select>
+	
+	<select id="selectByP_No" parameterType="int" resultMap="ordersResultMap">
+		select o.*,s.*, s.user_id seller_id
+		from orders o
+			join product s
+            on o.p_no = s.p_no
+		where o.p_no=#{p_no}
+	</select>
+	
+	
+	<insert id="insertOrders"
+		parameterType="com.itwill.brown_carrot_market.dto.Orders">
+		insert into orders values(ORDERS_ORDERS_NO_SEQ.nextval, #{product.p_no}, #{userinfo.user_id},sysdate)
+	</insert>
+	<delete id="deleteOrders"
+		parameterType="com.itwill.brown_carrot_market.dto.Orders">
+		delete orders where orders_no = #{orders_no}
+	</delete>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.TownImageMapper">
+	<resultMap id="townBoardImageResultMap" type="com.itwill.brown_carrot_market.dto.TownImage" >
+		<result column="T_IMG_NO" property="t_img_no"/>
+		<result column="T_IMG_NAME" property="t_img_name"/>
+		<result column="T_NO" property="t_no"/>
+	</resultMap>
+
+	<!-- 해당 게시물의 사진 전체 삭제 -->
+	<delete id="deleteTownBoardImgAll" parameterType="java.lang.Integer">
+		delete town_img where t_no=#{t_no}
+	</delete>
+	
+	<!-- 해당 게시물의 사진 한개 삭제 -->
+	<delete id="deleteTownBoardImgOne" parameterType="java.lang.Integer">
+		delete town_img where t_img_no=#{t_img_no}
+	</delete>
+	
+	<!-- 해당 게시물 사진 수정할때 사진 삽입 (사진 한장 삽입)-->
+	<insert id="insertTownBoardImg" parameterType="com.itwill.brown_carrot_market.dto.TownImage">
+		insert into town_img(t_img_no, t_img_name, t_no) values(TOWN_IMG_T_IMG_NO_SEQ.nextval,#{t_img_name},#{t_no})
+	</insert>
+	
+	<!-- 사진 여러장 삽입 -->
+	<insert id="insertTownBoardListImg" parameterType="com.itwill.brown_carrot_market.dto.TownImage">
+		insert into town_img(t_img_no, t_img_name, t_no) select TOWN_IMG_T_IMG_NO_SEQ.nextval, t.* from(
+	<foreach collection="townBoardImageList" item="productImage" separator="UNION ALL">
+		select #{townBoardImage.t_img_name} as t_img_name,#{townBoardImage.t_img_no} as t_img_no from Dual
+	</foreach>
+	</insert>
+	
+	<!-- t_no로 이미지 리스트 불러오기 -->
+	<select id="selectTownBoardImgList" parameterType="int" resultMap="townBoardImageResultMap">
+		select * from town_img where t_no=#{t_no}
+	</select>
+	
+	<!-- 사진 한장 선택 -->
+	<select id="selectTownBoardImgOne" parameterType="int" resultMap="townBoardImageResultMap">
+		select * from town_img where t_img_no=#{t_img_no}
+	</select>
+
+</mapper>

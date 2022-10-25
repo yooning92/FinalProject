@@ -1,0 +1,15 @@
+
+
+
+.single_catagory_slide {
+  position: relative;
+  z-index: 1;
+  text-align: center; }
+  .single_catagory_slide a {
+    display: block;
+    margin: 0 auto 15px; }
+    .single_catagory_slide a img {
+      -webkit-transition-duration: 500ms;
+      -o-transition-duration: 500ms;
+      transition-duration: 500ms;
+      }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript"
+	src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		$(document).on('click', '#mail_btn', function(e) {
+
+			$.ajax({
+				url : 'springMail',
+				method : 'POST',
+				data:{
+					"user_id":"carrot1",
+					"invi_email":"tjdudg@naver.com"
+				},
+				success : function(e) {
+					console.log("success");
+				}
+			});
+
+			e.preventDefault();
+		});
+	});
+</script>
+</head>
+<body>
+	<div id="mail_content">
+		<input id="mail_btn" type="button" value="메일 발송">
+	</div>
+</body>
+</html>

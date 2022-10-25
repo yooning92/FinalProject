@@ -1,0 +1,332 @@
+.catagory_section a, .achive_section a {
+    display: inline;
+    font-size: 14px;
+    height: auto;
+    padding: 5px 0;
+    width: 100%;
+}
+#townBoard_list_tbody_all .blog_post_content{
+	margin-bottom: 50px;
+}
+
+
+.single_blog_area .blog_post_thumb img {
+    border-radius: 6px 6px 0 0;
+    width: 100%;
+}
+
+.single_latest_post {
+    position: relative;
+    z-index: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.single_blog_area .blog_post_content .post-date {
+    position: absolute;
+    width: 80px;
+    height: 90px;
+    background-color: #0f99f3;
+    top: 0;
+    right: 40px;
+    text-align: center;
+    border-radius: 0 0 6px 6px;
+}
+
+.single_blog_area .blog_post_content .post-date a {
+    color: #ffffff;
+    display: block;
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.21);
+}
+
+.single_blog_area .blog_post_content .post-date span {
+    color: #ffffff;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+}
+
+li{
+	margin-left: 10px;
+}
+
+.imgspan::after{
+	width:30px;
+	height:30px;
+	background-color: #eee;
+	border-radius: 50%;
+	top: 50%;
+	left:50%;
+	transform: translate(-50%,-50%);
+	background-position: center;
+	background-size: contain;
+	background-image: url("p-img/plus.png");
+	content: '';
+	display: block;
+	position: absolute;
+	
+}
+
+.form-control.rereply{
+	height: 100px;
+}
+.col-12.rereply{
+	margin-bottom: -10px;
+}
+.townReply.delete{
+	margin-top: 15px;
+}
+.bxslider img{
+	width: 650px;
+	height: 650px;
+	 margin-left:원본 이미지 가로 사이즈의 반만큼 이동; 
+}
+
+/***************** 버튼 *******************/
+.townBoard_btn{
+	background-color: orange;
+	border-radius: 8px;
+	padding: 10px;
+	color: white;
+	border-style: none;
+	margin-right: 10px;
+	margin-bottom:20px;
+	font-size: 15px;
+	width: 200px;
+	font-weight: 700;
+	
+	
+	-webkit-transition-duration: 500ms;
+    -o-transition-duration: 500ms;
+    transition-duration: 500ms;
+    padding: 0 24px;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    border-color: transparent;
+    border-radius: 8px;
+    font-weight: 700;
+    height: 44px;
+    line-height: 42px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+	
+}
+.townBoard_btn:hover{
+	background-color: #343a40;
+}
+
+.townBoard_btn.delete{
+	background-color: #9FC93C;
+}
+.townBoard_btn.delete:hover{
+	background-color: #343a40;
+}
+
+
+.comment-content input{
+	
+	border-radius: 8px;
+	padding: 10px;
+	color: white;
+	border-style: none;
+	margin-right: 10px;
+	margin-bottom:20px;
+	font-size: 12px;
+	font-weight: 700;
+	
+	-webkit-transition-duration: 500ms;
+    -o-transition-duration: 500ms;
+    transition-duration: 500ms;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    text-transform: uppercase;
+	
+	
+	
+}
+
+
+.heading{ /*댓글달기 버튼 */
+	background-color: orange;
+	border-radius: 8px;
+	padding: 10px;
+	color: white;
+	border-style: none;
+	margin-right: 10px;
+	margin-bottom:20px;
+	font-size: 12px;
+	width: 100px;
+	font-weight: 700;
+	
+
+	
+}
+.heading:hover{
+	background-color: #343a40;
+}
+
+.townReply.delete{/* 댓글삭제 버튼 */
+	background-color: #9FC93C;
+	border-radius: 8px;
+	padding: 10px;
+	color: white;
+	border-style: none;
+	margin-right: 10px;
+	margin-bottom:20px;
+	font-size: 12px;
+	width: 100px;
+	font-weight: 700;
+}
+
+.townReply.delete:hover{
+	background-color: #343a40;
+}
+
+.form-group>.t_reply_title{
+	width:100%;
+	border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+	display: block;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+	
+}
+.single_blog_area .blog_post_content .post-date {
+    position: absolute;
+    width: 80px;
+    height: 90px;
+    background-color: orange;
+    top: 0;
+    right: 40px;
+    text-align: center;
+    border-radius: 0 0 6px 6px;
+}
+
+.shop_pagination_area .page-item.active .page-link { /* 페이징 버튼 색 변경 */
+    background-color: orange;
+    color: #ffffff;
+}
+.footer_area { /* 푸터 색 변경 */
+   /* position: relative;
+    z-index: 1;*/
+    background-color: #FBF8EF;
+}
+/***************** 버튼 끝 *******************/
+/***************** 우리동네 게시글 쓰기폼 *******************/
+.contact_from mb-50{
+	width: 500px;
+	margin-bottom: 50px;
+}
+/*
+.form-group span input{
+	background-color: orange;
+	border-radius: 8px;
+	padding: 10px;
+	color: white;
+	border-style: none;
+	margin-top:10px;
+	margin-right: 10px;
+	margin-bottom:20px;
+	font-size: 12px;
+	width: 100px;
+	font-weight: 700;
+}
+*/
+#t_content{
+	margin-top: 10px;
+	margin-bottom:30px;
+	height: 300px;
+	resize: none;
+}
+
+#btn_townBoard_write_action, .townBoard_btn.list{
+	margin-bottom: 30px;
+}
+
+.form-group span{
+	margin-left: 30px;
+}
+
+/*
+ .town_pic_upload {
+    width: 100px;
+    background: white;
+    border: 2px solid orange;
+    border-radius: 8px;
+    font-weight: 800;
+    color: orange;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    justify-content: center;
+    padding: 8px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+.town_pic_upload:hover{
+	background: orange;
+	color: white;
+}
+
+#img_choose {
+    display: none;
+} */
+/*
+#img_choose>#file_upload_button{
+	display: none;
+}
+*/
+
+
+/*
+.status-bar mb-15 a{
+	font-size: 50px;
+}
+*/
+#category_list ul{
+	width: 100px;
+}
+
+
+
+/***************** 우리동네 게시글 쓰기폼 끝 *******************/
+
+#main_contact_form_townBoard{
+	margin-top:50px;
+	margin-left: 150px;
+	margin-right: 150px;
+	height: 500px;
+	
+	
+}
+
+
+
+/************ 슬라이드쇼 시작 **************/
+* { margin: 0; padding: 0; }
+ul { width: 700px; }
+li { list-style: none; }
+/************ 슬라이드쇼 끝 **************/
+
+

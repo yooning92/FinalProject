@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.TownWishListMapper">
+	<resultMap id="townWishListResultMap" type="com.itwill.brown_carrot_market.dto.TownWishList" >
+		<result column="T_WL_NO" property="t_wl_no"/>
+		<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+			<result column="USER_ID" property="user_id"/>
+			<result column="USER_PW" property="user_pw"/>
+			<result column="USER_NAME" property="user_name"/>
+			<result column="USER_EMAIL" property="user_email"/>
+			<result column="USER_PHONE" property="user_phone"/>
+			<result column="USER_FRESHNESS" property="user_freshness"/>
+			<result column="USER_POINT" property="user_point"/>
+			<result column="USER_PROFILE" property="user_profile"/>
+		</association>
+		<association property="townBoard" javaType="com.itwill.brown_carrot_market.dto.TownBoard">
+			<result column="T_NO" property="t_no"/>
+			<result column="T_TITLE" property="t_title"/>
+			<result column="T_CONTENT" property="t_content"/>
+			<result column="T_DATE" property="t_date"/>
+			<result column="T_COUNT" property="t_count"/>
+			<result column="T_ADDRESS_NAME" property="t_address_name"/>
+			<result column="T_ADDRESS_LAT" property="t_address_lat"/>
+			<result column="T_ADDRESS_LNG" property="t_address_lng"/>
+		</association>
+	</resultMap>
+
+
+	<!-- 관심목록 총 갯수 -->
+	<select id="selectTownWishListCount" resultType="int" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+		select count(*) from town_wishlist where user_id = #{user_id}
+	</select>
+	<!-- 관심 목록 글 전체 조회 -->
+	<select id="selectTownWishListAll" parameterType="java.lang.String" resultMap="townWishListResultMap">
+		select * from town_wishlist tw
+		join town_board tb
+		on tw.t_no = tb.t_no
+		left outer join town_img ti
+		on tb.t_no= ti.t_no
+		where tw.user_id=#{user_id}
+	</select>
+	<!-- 관심목록 리스트에서 글 한개 조회 -->
+	<select id="selectTownWishListOne" parameterType="int" resultMap="townWishListResultMap">
+		select * from town_wishlist wl 
+		join town_board tb
+		on wl.t_no = tb.t_no
+		where wl.t_wl_no=#{t_wl_no}
+	</select>
+	<!-- 관심목록 등록 -->
+	<insert id="insertTownWishList" parameterType="com.itwill.brown_carrot_market.dto.TownWishList">
+		insert into town_wishlist(t_wl_no,user_id,t_no) 
+		values(TOWN_WISHLIST_T_WL_NO_SEQ.nextval,#{userInfo.user_id},#{townBoard.t_no})
+	</insert>
+	<!-- 관심목록 글 한개 삭제 -->
+	<delete id="deleteTownWishList" parameterType="int">
+		delete town_wishlist where t_wl_no=#{t_wl_no}
+	</delete>
+	
+	<!-- 관심 목록 존재 확인 -->
+	<select id="selectTownWishExist" parameterType="com.itwill.brown_carrot_market.dto.TownWishList" resultType="int">
+		select count(*) from town_wishlist where  user_id = #{userinfo.user_id} and t_no = #{townBoard.t_no}
+	</select>
+	
+
+</mapper>

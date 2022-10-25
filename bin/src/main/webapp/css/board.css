@@ -1,0 +1,105 @@
+th {
+	text-align: center;	
+}
+.board_no {
+	width: 8%;
+}
+
+.board_title {
+	width: 50%;
+}
+
+.board_fix {
+	width: 10%;
+}
+.board_count {
+	width: 10%;
+}
+
+.board_date {
+	width: 15%;
+}
+
+.board_count {
+	width: 8%;
+}
+
+#notice_btn_container {
+	display: flex;
+	justify-content: flex-end;
+}
+
+#notice_content_td {
+	height: 500px;
+	padding: 20px;
+}
+
+.notice_btn {
+	all: unset;
+	font-size: 15px;
+	color: darkgray;
+	outline: solid darkgray 1px;
+	padding: 3px 7px;
+	border-radius: 12px;
+	margin-left: 10px;
+}
+
+.notice_btn:hover {
+	color: white;
+	background-color: orange;
+}
+
+.shortcodes_content {
+	margin-bottom: 15px;
+}
+
+.notice_btn.write_form {
+	float:right;
+}
+
+#notice_title_txt {
+	width: 100%;
+}
+
+#notice_content_area {
+	width: 100%;
+	height: 100%;
+}
+
+#notice_list_tbody tr{
+	text-align: center;
+}
+
+
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 90%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.badge.badge-normal{
+	background-color: #AAD34A;
+	text-align: center;
+	color: white;
+	
+}
+.badge.badge-danger{
+	background-color: #FFBB00;
+	text-align: center;
+	color: white;
+	
+}
+
+.shop_pagination_area .page-item.active .page-link { /* 페이징 버튼 색 변경 */
+    background-color: orange;
+    color: #ffffff;
+}
+
+

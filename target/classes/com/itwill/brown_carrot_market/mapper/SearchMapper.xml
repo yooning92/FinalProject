@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.itwill.brown_carrot_market.mapper.SearchMapper">
+	<resultMap id="productResultMap" type="com.itwill.brown_carrot_market.dto.Product" >
+		<result column="P_NO" property="p_no"/>
+		<result column="P_TITLE" property="p_title"/>
+		<result column="P_DESC" property="p_desc"/>
+		<result column="P_PRICE" property="p_price"/>
+		<result column="P_DATE" property="p_date"/>
+		<result column="P_SELL" property="p_sell"/>
+		<result column="P_COUNT" property="p_count"/>
+		<result column="P_WISH" property="p_wish"/>
+		<result column="P_ADDRESS_NAME" property="p_address_name"/>
+		<result column="P_ADDRESS_LAT"  property="p_address_lat"/>
+		<result column="P_ADDRESS_LNG" property="p_address_lng"/>
+		<association property="productCategory" javaType="com.itwill.brown_carrot_market.dto.ProductCategory">
+			<result column="P_CTGR_NO" property="p_ctgr_no"/>
+			<result column="P_CTGR_NAME" property="p_ctgr_name"/>
+		</association>
+		<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+			<result column="USER_ID" property="user_id"/>
+			<result column="USER_PW" property="user_pw"/>
+			<result column="USER_NAME" property="user_name"/>
+			<result column="USER_EMAIL" property="user_email"/>
+			<result column="USER_PHONE" property="user_phone"/>
+			<result column="USER_FRESHNESS" property="user_freshness"/>
+			<result column="USER_POINT" property="user_point"/>
+			<result column="USER_PROFILE" property="user_profile"/>
+		</association>
+		<collection property="productImagesList" javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.ProductImage">
+			<result column="PI_NO" property="pi_no"/>
+			<result column="PI_NAME" property="pi_name"/>
+			<result column="P_NO" property="p_no"/>
+		</collection>
+		<collection property="addressList" javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.Address">
+			<result column="ADDRESS_NO" property="address_no"/>
+			<result column="ADDRESS_NAME" property="address_name"/>
+			<result column="ADDRESS_LAT" property="address_lat"/>
+			<result column="ADDRESS_LNG" property="address_lng"/>
+			<result column="ADDRESS_RANGE" property="address_range"/>
+			<result column="USER_ID" property="user_id"/>
+		</collection> 
+	</resultMap> 
+	
+		<resultMap id="townBoradResultMap" type="com.itwill.brown_carrot_market.dto.TownBoard" >
+		<result column="T_NO" property="t_no"/>
+		<result column="T_TITLE" property="t_title"/>
+		<result column="T_CONTENT" property="t_content"/>
+		<result column="T_DATE" property="t_date"/>
+		<result column="T_COUNT" property="t_count"/>
+		<result column="T_ADDRESS_NAME" property="t_address_name"/>
+		<result column="T_ADDRESS_LAT" property="t_address_lat"/>
+		<result column="T_ADDRESS_LNG" property="t_address_lng"/>
+		<association property="townCategory" javaType="com.itwill.brown_carrot_market.dto.TownCategory">
+			<result column="T_CTGR_NO" property="t_ctgr_no"/>
+			<result column="T_CTGR_NAME" property="t_ctgr_name"/>
+		</association>
+		<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+			<result column="USER_ID" property="user_id"/>
+			<result column="USER_PW" property="user_pw"/>
+			<result column="USER_NAME" property="user_name"/>
+			<result column="USER_EMAIL" property="user_email"/>
+			<result column="USER_PHONE" property="user_phone"/>
+			<result column="USER_FRESHNESS" property="user_freshness"/>
+			<result column="USER_POINT" property="user_point"/>
+			<result column="USER_PROFILE" property="user_profile"/>
+		</association>
+		<collection property="townImageList" javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.TownImage" >
+			<result column="T_IMG_NO" property="t_img_no"/>
+			<result column="T_IMG_NAME" property="t_img_name"/>
+		</collection>
+		<collection property="addressesList" javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.Address">
+			<result column="address_no" property="address_no" />
+			<result column="address_name" property="address_name" />
+			<result column="address_lat" property="address_lat" />
+			<result column="address_lng" property="address_lng" />
+			<result column="address_range" property="address_range" />
+		</collection>
+		
+	</resultMap>
+	
+	
+	
+	<!-- 로그인한 회원 범위안 상품 리스트 검색해서  불러오기-->
+	<select id="selectListSearch" parameterType="map" resultMap="productResultMap">
+		select sss.* from(select rownum idx,plist.*,pmg.pi_name from product_img pmg
+          right outer join (select p.*,imgno from (select min(i.pi_no)imgno,i.p_no from product_img i group by i.p_no) img 
+              right outer join (select * from  (select p.*,pc.p_ctgr_name from product p join p_category pc on p.p_ctgr_no=pc.p_ctgr_no
+             where p.p_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no}))pp
+        where pp.p_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            and p_desc like '%'||#{search_keyword}||'%' or p_title like '%'||#{search_keyword}||'%'
+            )p 
+            on img.p_no=p.p_no)plist
+            on pmg.pi_no=plist.imgno)sss
+            where sss.idx<![CDATA[ >= ]]> #{pageStart}and sss.idx<![CDATA[ <= ]]> #{pageEnd}
+            order by sss.p_date desc   
+	</select>
+	
+	
+	<select id="selectListSearchCount" parameterType="map" resultType="int">
+	select count(*) from product_img pmg
+          right outer join (select * from (select min(i.pi_no)imgno,i.p_no from product_img i group by i.p_no) img 
+              right outer join (select * from  (select * from product p join p_category pc on p.p_ctgr_no=pc.p_ctgr_no
+             where p.p_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no}))pp
+        where pp.p_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            and p_desc like '%'||#{search_keyword}||'%' or p_title like '%'||#{search_keyword}||'%'
+            )p 
+            on img.p_no=p.p_no)plist
+            on pmg.pi_no=plist.imgno
+	</select>
+	
+	
+	
+	
+	
+	<!-- 비회원 상태 검색  -->
+	<select id="selectListNotLogin" resultMap="productResultMap">
+	
+	select sss.* from (select rownum idx,plist.*,pmg.pi_name from product_img pmg 
+right outer join (select p.*,imgno from (select min(i.pi_no)imgno,p_no from product_img i
+group by i.p_no)img 
+right outer join (select *
+from product p where p_desc like '%'||#{search_keyword}||'%' or p_title like '%'||#{search_keyword}||'%')p 
+on img.p_no=p.p_no)plist
+on pmg.pi_no=plist.imgno)sss
+where sss.idx<![CDATA[ >= ]]> #{pageStart} and sss.idx<![CDATA[ <= ]]> #{pageEnd}
+
+	</select>
+	
+	<select id="selectListNotLoginCount" parameterType="java.lang.String" resultType="int">
+	select count(*) from product_img pmg 
+right outer join (select p.*,imgno from (select min(i.pi_no)imgno,p_no from product_img i
+group by i.p_no)img 
+right outer join (select *
+from product p where p_desc like '%'||#{search_keyword}||'%' or p_title like '%'||#{search_keyword}||'%')p 
+on img.p_no=p.p_no)plist
+on pmg.pi_no=plist.imgno
+	</select>
+	
+	
+	
+	<!-- 동네생활 검색 -->
+	
+	<!-- 회원  -->
+	<select id="searchTownBoardList" parameterType="map" resultMap="townBoradResultMap">
+	select sss.* from(select rownum idx,plist.*,pmg.t_img_name from town_img pmg
+          right outer join (select p.*,imgno from (select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img 
+              right outer join (select * from  (select * from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no
+             where p.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no}))pp
+        where pp.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            and t_content like '%'||#{search_keyword}||'%' or t_title like '%'||#{search_keyword}||'%'
+            )p 
+            on img.t_no=p.t_no)plist
+            on pmg.t_img_no=plist.imgno)sss
+            where sss.idx<![CDATA[ >= ]]> #{pageStart} and sss.idx<![CDATA[ <= ]]> #{pageEnd}
+            order by sss.t_date desc   
+	</select>
+	
+	<select id="searchTownBoardListCount" parameterType="map" resultType="int">
+	select count(*) from town_img pmg
+          right outer join (select * from (select min(i.t_img_no)imgno,i.t_no from town_img i group by i.t_no) img 
+              right outer join (select * from  (select * from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no
+             where p.t_address_lat 
+             between (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+                AND (select a.address_lat from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.004504505*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no}))pp
+        where pp.t_address_lng
+        between (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})-0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            AND (select a.address_lng from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})+0.056344377*(select a.address_range from address a where a.user_id=#{address.user_id} and a.address_no=#{address.address_no})
+            and t_content like '%'||#{search_keyword}||'%' or t_title like '%'||#{search_keyword}||'%'
+            )p 
+            on img.t_no=p.t_no)plist
+            on pmg.t_img_no=plist.imgno
+	</select>
+	
+	
+	<!-- 비회원 -->
+	<select id="searchTownBoardListNotLogin" resultMap="townBoradResultMap">
+	select ss.* from 
+		(select rownum idx, s.* from
+		(select ctlist.* from (select plist.*,pmg.t_img_name from town_img pmg 
+right outer join (select tb.*,imgno from 
+                    (select min(i.t_img_no)imgno,t_no from town_img i group by i.t_no)img 
+right outer join (select *
+from (select p.*,pc.t_ctgr_name from town_board p join town_category pc on p.t_ctgr_no=pc.t_ctgr_no) p where t_content like '%'||#{search_keyword}||'%' or t_title like '%'||#{search_keyword}||'%')tb
+on img.t_no=tb.t_no)plist
+on pmg.t_img_no=plist.imgno) ctlist
+join town_category tc
+on ctlist.t_ctgr_no = tc.t_ctgr_no)s
+		)ss
+		where ss.idx <![CDATA[ >= ]]> #{pageStart} and ss.idx <![CDATA[ <= ]]> #{pageEnd}
+
+
+	</select>
+	
+	<select id="searchTownBoardListNotLoginCount" parameterType="java.lang.String" resultType="int">
+	select count(*) from
+		(select ctlist.* from (select plist.*,pmg.t_img_name from town_img pmg 
+right outer join (select tb.*,imgno from 
+                    (select min(i.t_img_no)imgno,t_no from town_img i group by i.t_no)img 
+right outer join (select *
+from town_board p where t_content like '%'||#{search_keyword}||'%' or t_title like '%'||#{search_keyword}||'%')tb
+on img.t_no=tb.t_no)plist
+on pmg.t_img_no=plist.imgno) ctlist
+join town_category tc
+on ctlist.t_ctgr_no = tc.t_ctgr_no)s
+	</select>
+	
+</mapper>

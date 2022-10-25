@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.TransferMapper">
+	<resultMap id="transferResultMap" type="com.itwill.brown_carrot_market.dto.Transfer" >
+		<result column="transfer_no" property="transfer_no" />
+		<result column="transfer_deposit" property="transfer_deposit" />
+		<result column="transfer_withdraw" property="transfer_withdraw" />
+		<result column="transfer_date" property="transfer_date"/>
+		<result column="user_id" property="user_id"/>
+		<result column="t_balance" property="t_balance"/>
+			<association property="orders" javaType="com.itwill.brown_carrot_market.dto.Orders">
+				<result column="orders_no" property="orders_no"/>
+				<association property="userinfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+					<result column="USER_ID" property="user_id"/>
+					<result column="USER_PW" property="user_pw"/>
+					<result column="USER_NAME" property="user_name"/>
+					<result column="USER_EMAIL" property="user_email"/>
+					<result column="USER_PHONE" property="user_phone"/>
+					<result column="USER_FRESHNESS" property="user_freshness"/>
+					<result column="USER_POINT" property="user_point"/>
+					<result column="USER_PROFILE" property="user_profile"/>
+					</association>
+					<association property="product" javaType="com.itwill.brown_carrot_market.dto.Product">
+						<result property="p_no" column="p_no" />
+					    <result property="p_title" column="p_title" />
+					    <result property="p_desc" column="p_desc" />
+					    <result property="p_price" column="p_price" />
+					    <result property="p_date" column="p_date" />
+					<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+							<result column="USER_ID" property="user_id"/>
+							<result column="USER_NAME" property="user_name"/>
+							<result column="USER_POINT" property="user_point"/>
+					</association>
+				</association>
+			</association>
+		<association property="product" javaType="com.itwill.brown_carrot_market.dto.Product">
+			<result property="p_no" column="p_no" />
+		    <result property="p_title" column="p_title" />
+		    <result property="p_desc" column="p_desc" />
+			<result property="p_price" column="p_price" />
+		    <result property="p_date" column="p_date" />
+			<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+				<result column="USER_ID" property="user_id"/>
+				<result column="USER_NAME" property="user_name"/>
+				<result column="USER_POINT" property="user_point"/>
+			</association>
+		</association>
+		<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+				<result column="USER_ID" property="user_id"/>
+				<result column="USER_NAME" property="user_name"/>
+				<result column="USER_POINT" property="user_point"/>
+		</association>
+	</resultMap>
+<!-- 
+	<insert id = "insertTransfer_Deposit" parameterType="com.itwill.brown_carrot_market.dto.Transfer">
+		insert into transfer values(TRANSFER_TRANSFER_NO_SEQ.nextval, (select p_price from product where p_no = #{p_no}), 0, sysdate, (select user_id from orders where p_no = #{p_no}), (select orders_no from orders where p_no = #{p_no}),#{p_no},0)
+	
+	 <selectKey keyProperty="transfer_no" order="BEFORE" resultType="int">
+			select TRANSFER_TRANSFER_NO_SEQ.nextval from dual
+	</selectKey>
+		insert into transfer values(TRANSFER_TRANSFER_NO_SEQ.nextval, 0, (-1*(select p_price from product where p_no = #{product.p_no})), sysdate-5, (select user_id from orders where p_no =#{product.p_no}), (select orders_no from orders where p_no = #{product.p_no}), #{product.p_no},(select user_point from userinfo where user_id=(select user_id from orders where p_no = #{product.p_no}))-(select p_price from product where p_no = #{product.p_no}))
+	</insert>
+	
+	<insert id = "insertTransfer_Withdraw" parameterType="int">
+		insert into transfer values(TRANSFER_TRANSFER_NO_SEQ.nextval, (select p_price from product where p_no = #{p_no}), 0, sysdate, (select user_id from product where p_no = #{p_no}), (select orders_no from orders where p_no = #{p_no}),#{p_no},0)
+	</insert>
+
+	<insert id = "insertTransfer_Deposit_Cancle" parameterType="int">
+		insert into transfer values(TRANSFER_TRANSFER_NO_SEQ.nextval, 0, (select p_price from product where p_no = #{p_no}), sysdate, (select user_id from orders where p_no = #{p_no}), (select orders_no from orders where p_no = #{p_no}),#{p_no},0)
+	</insert>
+
+	<insert id = "insertTransfer_Withdraw_Cancle" parameterType="int">
+		insert into transfer values(TRANSFER_TRANSFER_NO_SEQ.nextval, (select p_price from product where p_no = #{p_no}), 0, sysdate, (select user_id from product where p_no = #{p_no}), (select orders_no from orders where p_no = #{p_no}),#{p_no},0)	
+	</insert>
+	<select id = "selectById" resultMap="transferResultMap">
+		select s.user_id, s.transfer_no, s.transfer_deposit, s.transfer_withdraw, s.transfer_date, s.t_balance from (select t.user_id, t.transfer_no, t.transfer_deposit, t.transfer_withdraw, t.transfer_date, t.t_balance from transfer t left outer join orders o on t.p_no = o.p_no)s join userinfo u on s.user_id=u.user_id where s.user_id=#{user_id} order by s.transfer_date desc
+	</select>
+	<select id = "selectByP_No" resultMap="transferResultMap">
+		select p.user_id, p.p_price, p.p_title from transfer t join product p on t.p_no=p.p_no where p.p_no=#{p_no}
+	</select>
+	-->
+</mapper>

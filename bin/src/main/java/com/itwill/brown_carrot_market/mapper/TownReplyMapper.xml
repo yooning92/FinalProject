@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.TownReplyMapper">
+	<resultMap id="townReplyResultMap" type="com.itwill.brown_carrot_market.dto.TownReply" >
+		<result column="T_REPLY_NO" property="t_reply_no"/>
+		<result column="T_REPLY_TITLE" property="t_reply_title"/>
+		<result column="T_REPLY_CONTENT" property="t_reply_content"/>
+		<result column="T_REPLY_DATE" property="t_reply_date"/>
+		<result column="GROUPNO" property="groupno"/>
+		<result column="STEP" property="step"/>
+		<result column="DEPTH" property="depth"/>
+		<association property="userInfo" javaType="com.itwill.brown_carrot_market.dto.UserInfo">
+			<result column="USER_ID" property="user_id"/>
+			<result column="USER_PW" property="user_pw"/>
+			<result column="USER_NAME" property="user_name"/>
+			<result column="USER_EMAIL" property="user_email"/>
+			<result column="USER_PHONE" property="user_phone"/>
+			<result column="USER_FRESHNESS" property="user_freshness"/>
+			<result column="USER_POINT" property="user_point"/>
+			<result column="USER_PROFILE" property="user_profile"/>
+		</association>
+		<association property="townBoard" javaType="com.itwill.brown_carrot_market.dto.TownBoard">
+			<result column="T_NO" property="t_no"/>
+			<result column="T_TITLE" property="t_title"/>
+			<result column="T_CONTENT" property="t_content"/>
+			<result column="T_DATE" property="t_date"/>
+			<result column="T_COUNT" property="t_count"/>
+			<result column="T_ADDRESS_NAME" property="t_address_name"/>
+			<result column="T_ADDRESS_LAT" property="t_address_lat"/>
+			<result column="T_ADDRESS_LNG" property="t_address_lng"/>
+		</association>
+	</resultMap>
+
+	<!-- 댓글 등록 -->
+	<!--
+	<insert id="insertTownBoardReply" parameterType="com.itwill.brown_carrot_market.dto.TownReply">
+		insert into town_reply(T_REPLY_NO, T_REPLY_TITLE, T_REPLY_CONTENT,T_REPLY_DATE ,GROUPNO,STEP,DEPTH,user_id, t_no)
+		values(TOWN_REPLY_T_REPLY_NO_SEQ.nextval,#{t_reply_title},#{t_reply_content},sysdate,#{townBoard.t_no},#{step},#{depth},#{userInfo.user_id},#{townBoard.t_no})
+	</insert>
+	  -->
+	<!-- 댓글 등록 -->
+	<insert id="insertTownBoardReply" parameterType="com.itwill.brown_carrot_market.dto.TownReply">
+		<selectKey resultType="java.lang.Integer" keyProperty="t_reply_no" order="BEFORE">
+				SELECT TOWN_REPLY_T_REPLY_NO_SEQ.nextval FROM DUAL
+		</selectKey>
+		insert into town_reply(T_REPLY_NO, T_REPLY_TITLE, T_REPLY_CONTENT,T_REPLY_DATE ,GROUPNO,STEP,DEPTH,user_id, t_no)
+		values(#{t_reply_no},#{t_reply_title},#{t_reply_content},sysdate,TOWN_REPLY_T_REPLY_NO_SEQ.currval,#{step},#{depth},#{userInfo.user_id},#{townBoard.t_no})
+	</insert>
+	
+	<!-- 대댓글 등록 -->
+	<!-- 
+	<insert id="insertTownBoardReReply" parameterType="com.itwill.brown_carrot_market.dto.TownReply">
+		<selectKey resultType="java.lang.Integer" keyProperty="t_reply_no" order="BEFORE">
+				SELECT TOWN_REPLY_T_REPLY_NO_SEQ.nextval FROM DUAL
+		</selectKey>
+		insert into town_reply(T_REPLY_NO, T_REPLY_TITLE, T_REPLY_CONTENT,T_REPLY_DATE ,GROUPNO,STEP,DEPTH,user_id, t_no)
+		values(#{t_reply_no},#{t_reply_title},#{t_reply_content},sysdate,#{groupno},#{step}+1,#{depth},#{userInfo.user_id},#{townBoard.t_no})
+	</insert>
+	 -->
+	 <!-- 대댓글 등록 -->
+	<insert id="insertTownBoardReReply" parameterType="com.itwill.brown_carrot_market.dto.TownReply">
+		<selectKey resultType="java.lang.Integer" keyProperty="t_reply_no" order="BEFORE">
+				SELECT TOWN_REPLY_T_REPLY_NO_SEQ.nextval FROM DUAL
+		</selectKey>
+		
+		insert into town_reply(T_REPLY_NO, T_REPLY_TITLE, T_REPLY_CONTENT,T_REPLY_DATE ,GROUPNO,STEP,DEPTH,user_id, t_no)
+		values(#{t_reply_no},#{t_reply_title},#{t_reply_content},sysdate,#{groupno},#{step}+1,#{depth},#{userInfo.user_id},#{townBoard.t_no})
+	</insert>
+	
+	<!-- 대댓글 step 증가 -->
+	<update id="updateStep" parameterType="com.itwill.brown_carrot_market.dto.TownReply">
+		update town_reply set step = step+1 where step > #{step} and groupno=#{groupno}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="deleteTownBoardReply" parameterType="int">
+		delete town_reply where t_reply_no = #{t_reply_no}
+	</delete>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateTownBoardReply" parameterType="com.itwill.brown_carrot_market.dto.TownReply">
+		update town_reply set t_reply_title=#{t_reply_title}, t_reply_content=#{t_reply_content} where t_reply_no=#{t_reply_no}
+	</update>
+	
+	<!-- 게시물에 해당하는 댓글 전체조회 -->
+	<select id="selectTownBoardReplyList" parameterType="com.itwill.brown_carrot_market.dto.TownReply" resultMap="townReplyResultMap">
+		select tr.*, u.user_profile from town_reply tr
+		join userinfo u
+		on tr.user_id = u.user_id
+		where t_no=#{townBoard.t_no} order by groupno asc, step desc ,depth asc
+	</select>
+	
+	<!-- 댓글 한개 조회 -->
+	<select id="selectTownBoardReplyOne" parameterType="int" resultMap="townReplyResultMap">
+		select * from town_reply where t_reply_no=#{t_reply_no}
+	</select>
+	
+
+</mapper>

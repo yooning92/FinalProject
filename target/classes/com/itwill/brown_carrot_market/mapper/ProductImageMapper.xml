@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.ProductImageMapper">
+	<resultMap id="productImageResultMap" type="com.itwill.brown_carrot_market.dto.ProductImage">
+		<result column="PI_NO" property="pi_no"/>
+		<result column="PI_NAME" property="pi_name"/>
+		
+		<result column="P_NO" property="p_no"/>
+	</resultMap>
+	
+	<!-- p_no로 이미지 리스트 불러오기 -->
+	<select id="selectProductImgList" parameterType="int" resultMap="productImageResultMap">
+		select * from product_img where p_no=#{p_no}
+	</select>
+	
+	<!-- 사진 하나 선택 -->
+	<select id="selectProductImgOne" parameterType="int" resultMap="productImageResultMap">
+		select * from product_img where pi_no=#{pi_no}
+	</select>
+	
+	<!-- 사진 한장 인서트 -->
+	<insert id="insertProductImg" parameterType="com.itwill.brown_carrot_market.dto.ProductImage">
+		insert into product_img(pi_no,pi_name,p_no) 
+		values (product_img_pi_no_seq.nextval,#{pi_name},#{p_no})
+	</insert>
+	
+	<!-- 사진 여러장 인서트 
+	<update id="insertProductListImg" parameterType="com.itwill.brown_carrot_market.dto.ProductImage">
+		insert into product_img(pi_no,pi_name,p_no) values 
+		<foreach collection="productImageList" item="productImage" separator=" , ">
+		(product_img_pi_no_seq.nextval,#{productImage.pi_name},#{productImage.p_no})
+		</foreach>
+	</update>
+	-->
+	<insert id="insertProductListImg" parameterType="com.itwill.brown_carrot_market.dto.ProductImage"> 
+		insert into product_img(pi_no,pi_name,p_no) select product_img_pi_no_seq.nextval, P.* from(
+	<foreach collection="productImageList" item="productImage" separator="UNION ALL">
+		select #{productImage.pi_name} as pi_name,#{productImage.p_no} as p_no from Dual
+	</foreach>
+	</insert>
+	
+	
+	
+	
+	<!-- 사진 삭제 -->
+	<delete id="deleteProductImg" parameterType="int">
+		delete product_img where p_no=#{p_no}
+	</delete>
+</mapper>

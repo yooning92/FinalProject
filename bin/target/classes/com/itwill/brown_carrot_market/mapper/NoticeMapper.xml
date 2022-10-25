@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.NoticeMapper">
+
+<!-- 
+	<select id = "selectAll" resultType = "com.itwill.brown_carrot_market.dto.Notice">
+		select * from notice order by notice_fix desc, notice_no desc
+	</select>
+ -->
+ <!-- 페이징 처리하는 공지사항 전체조회 -->
+	<select id = "selectAll" parameterType="map" resultType = "com.itwill.brown_carrot_market.dto.Notice">
+		select ss.* from 
+		(select rownum idx, s.* from
+		(select * from notice order by notice_fix desc, notice_no desc)s
+		)ss
+		where ss.idx <![CDATA[ >= ]]> #{pageStart} and ss.idx <![CDATA[ <= ]]> #{pageEnd}
+	</select>
+	
+	<!-- 페이징 처리에 필요한 전체게시물 수 계산 -->
+	<select id="selectCountNotice" resultType="int">
+		select count(*) from notice
+	</select>
+	
+	<select id = "selectByNo" parameterType="java.lang.Integer" resultType="com.itwill.brown_carrot_market.dto.Notice">
+		select * from notice where notice_no=#{notice_no}
+	</select>
+	
+	<insert id="insertNotice" parameterType="com.itwill.brown_carrot_market.dto.Notice">
+		<selectKey resultType="java.lang.Integer"
+				keyProperty="notice_no" order="BEFORE">
+				SELECT notice_notice_no_seq.nextval FROM DUAL
+		</selectKey>
+		insert into notice values(#{notice_no}, #{notice_title}, #{notice_content}, 
+									sysdate,#{notice_count},#{notice_fix})
+	</insert>
+	
+	<delete id="deleteNotice" parameterType="java.lang.Integer">
+		delete notice where notice_no=#{notice_no}
+	</delete>
+	<update id="updateNotice" parameterType="com.itwill.brown_carrot_market.dto.Notice">
+		update notice set notice_title=#{notice_title}, notice_content=#{notice_content} ,notice_fix=#{notice_fix}
+		where notice_no=#{notice_no}
+	</update>
+	<update id="updateNoticeCount">
+		update notice set notice_count = notice_count+1 where notice_no = #{notice_no}
+	</update>
+	
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.UserInfoMapper">
+
+	<resultMap id="userInfoResultMap" type="com.itwill.brown_carrot_market.dto.UserInfo">
+		<result column="user_id" property="user_id" />
+		<result column="user_pw" property="user_pw" />
+		<result column="user_name" property="user_name" />
+		<result column="user_email" property="user_email" />
+		<result column="user_phone" property="user_phone" />
+		<result column="user_freshness" property="user_freshness" />
+		<result column="user_point" property="user_point" />
+		<result column="user_profile" property="user_profile" />
+
+		<collection property="addressList"
+			javaType="java.util.List" ofType="com.itwill.brown_carrot_market.dto.Address">
+			<result column="address_no" property="address_no" />
+			<result column="address_name" property="address_name" />
+			<result column="address_lat" property="address_lat" />
+			<result column="address_lng" property="address_lng" />
+			<result column="address_range" property="address_range" />
+			<result column="user_id" property="user_id" />
+		</collection>
+	</resultMap>
+
+	<!-- <select id="existedUser" parameterType="String" resultType="int"> --> 
+	<select id="existedUser" 	parameterType="com.itwill.brown_carrot_market.dto.UserInfo"  resultType="java.lang.Integer">
+		select count(*) cnt from userinfo where user_id= #{user_id}
+	</select>
+	
+	<select id="existedInvitation" parameterType="com.itwill.brown_carrot_market.dto.Invitation" resultType="java.lang.Integer">
+		select count(*) cnt from invitation where invi_email=#{invi_email}
+	</select>
+	
+	<select id="findUserList" resultMap="userInfoResultMap">
+		select * from address a join userinfo u on a.user_id=u.user_id
+	</select>
+	
+	<!-- user_id를 통해, userinfo와 addressList (Select) -->
+	<select id="findUser" parameterType="String" resultMap="userInfoResultMap">
+		select * from userinfo u left join address a on u.user_id=a.user_id where u.user_id= #{user_id} order by a.address_no asc
+	</select>
+
+	<select id="findInvitation" parameterType="com.itwill.brown_carrot_market.dto.Invitation" resultType="java.lang.String">
+		select user_id from invitation where invi_email=#{invi_email}
+	</select>
+	
+	<!-- [아이디찾기] 이름+이메일주소 -->
+	<select id="findIdByNameEmail" parameterType="com.itwill.brown_carrot_market.dto.UserInfo" resultType="java.lang.String">
+		 select RPAD(substr(user_id, 1, 4), lengthb(user_id), '*') 
+			 from userinfo 
+			 where user_email=#{user_email} and user_name=#{user_name}
+	</select>
+	
+	<!-- [비밀번호찾기] 아이디+이메일주소 -->
+	<select id="findPwByIdEmail" parameterType="com.itwill.brown_carrot_market.dto.UserInfo" resultType="int">
+		 select count(*)
+			 from userinfo
+			 where user_email=#{user_email} and user_id=#{user_id}
+	</select>
+	
+	<!-- [update Address Range] -->
+	<select id="findAddressesById" parameterType="com.itwill.brown_carrot_market.dto.UserInfo" resultType="com.itwill.brown_carrot_market.dto.Address">
+		 select *
+			 from address
+			 where user_id=#{user_id}
+	</select>
+	
+	
+	
+	<update id="updatePwById" parameterType="com.itwill.brown_carrot_market.dto.UserInfo" >
+	 	update userinfo set user_pw=#{user_pw}
+			where  user_id=#{user_id}
+	</update>
+	
+	
+	
+	<insert id="createUser" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+		<!-- INSERT INTO userinfo (user_id, user_pw, user_name, user_email, user_phone, user_freshness, user_point, user_profile ) -->
+		INSERT INTO userinfo
+			VALUES (#{user_id}, #{user_pw}, #{user_name}, #{user_email}, #{user_phone}, 0.0, 0, #{user_profile})
+	</insert>
+	
+	<insert id="createAddress" parameterType="com.itwill.brown_carrot_market.dto.Address"><!-- adress_range(default)=3 -->
+		<!-- insert into address(address_no, address_name, address_lat,address_lng, address_range,user_id) -->
+		insert into address
+			values(address_address_no_seq.nextval, #{address_name}, #{address_lat}, #{address_lng}, #{address_range} ,#{user_id})
+	</insert>
+	
+	<insert id="createInvitation" parameterType="com.itwill.brown_carrot_market.dto.Invitation">
+		insert into invitation(invi_no,invi_email,user_id)
+		values(INVITATION_INVI_NO_SEQ.nextval,#{invi_email},#{user_id})
+	</insert>
+	
+
+	<update id="updateUser" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+	 	update  userinfo 
+		set user_pw=#{user_pw},user_name=#{user_name},user_email=#{user_email},user_phone=#{user_phone} 
+		where user_id=#{user_id}
+	</update>
+	
+	<update id="updateAddress" parameterType="com.itwill.brown_carrot_market.dto.Address">
+	 	update address set address_name=#{address_name}, address_lat=#{address_lat}, address_lng=#{address_lng}, address_range=#{address_range}
+		where address_no=#{address_no}
+	</update>
+
+	<update id="updateAddressRange" parameterType="com.itwill.brown_carrot_market.dto.Address">
+	 	update address set address_range=#{address_range}
+		where address_no=#{address_no}
+	</update>
+
+	<!-- 매너온도 -->
+	<update id="updateFreshness" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+	 	update userinfo set user_freshness=#{user_freshness}
+		where user_id=#{user_id}
+	</update>
+
+	<!-- 포인트 -->
+	<update id="updatePoint" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+	 	update userinfo set user_point=user_point+#{user_point}
+		where user_id=#{user_id}
+	</update>
+
+	<!-- 프로필이미지 -->
+	<update id="updateProfile" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+	 	update userinfo set user_profile=#{user_profile}
+		where user_id=#{user_id}
+	</update>
+	
+
+	
+	
+	
+	
+	<!-- <delete id="remove" parameterType="String"> -->
+	<delete id="removeUser" parameterType="com.itwill.brown_carrot_market.dto.UserInfo">
+		delete userinfo where user_id=#{user_id}
+	</delete>
+
+	<delete id="removeAddress" parameterType="com.itwill.brown_carrot_market.dto.Address">
+		delete address where address_no=#{address_no}
+	</delete>
+	
+	
+
+
+</mapper>

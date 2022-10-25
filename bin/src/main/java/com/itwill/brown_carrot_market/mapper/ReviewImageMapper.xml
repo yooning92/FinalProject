@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itwill.brown_carrot_market.mapper.ReviewImageMapper">
+
+	<!-- 사진 여러장 인서트 -->
+	<insert id="insertReviewImgList" parameterType="com.itwill.brown_carrot_market.dto.ReviewImage">
+		insert into review_img(review_img_no, review_img_name, review_no)
+		select review_img_review_img_no_SEQ.nextval, R.* from(
+		<foreach collection="reviewImageList" item="item" separator="UNION ALL ">
+		select #{item.review_img_name} as review_img_name,
+				#{item.review_no} as  review_no
+		from dual
+		</foreach>) R
+	</insert>
+	
+	<delete id="removeReviewImgByNo" parameterType="int">
+		delete from review_img where review_img_no=0;
+	</delete>
+	
+	<delete id="removeReviewImgByNoList" parameterType="String">
+	    DELETE FROM review_img 
+	    <where>
+		    <foreach collection="list" item="item" open="" close="" separator="OR">
+		        (review_img_name = #{item.review_img_name})
+		    </foreach>
+	    </where>
+	</delete>
+	
+	<delete id="removeReviewImgByName" parameterType="String">
+	 DELETE FROM review_img where review_img_name = #{review_img_name}
+	</delete>
+
+</mapper>

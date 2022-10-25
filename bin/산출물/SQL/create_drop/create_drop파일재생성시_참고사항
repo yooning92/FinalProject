@@ -1,0 +1,11 @@
+<<create_drop파일 재생성시 추가 및 참고사항>>
+
+**chat_content테이블
+(fk)c_room_no에 "on delete cascade" 추가
+
+**(fk)user_id인 모든테이블에 on delete cascade추가
+
+**product.p_desc varchar2(1000)
+**product_img.pi_name varchar2(1000)
+**town_board.t_content varchar2(1000)
+**review_img.review_img_name varchar2(200)
